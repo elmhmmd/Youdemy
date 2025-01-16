@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        $errors[] = "Les mots de passe ne correspondent pas.";
     }
 
-    if (!is_int($roleId) || $roleId <= 0) {
+    if ($roleId !== 1 && $roleId !== 2 && $roleId !== 3) {
         $errors[] = "Le rôle sélectionné est invalide.";
     }
      

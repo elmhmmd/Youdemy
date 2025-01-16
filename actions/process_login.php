@@ -21,36 +21,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $loggedInUser = $user->login($email, $password);
 
     if ($loggedInUser) {
-        // Store user information in the session
+
         $_SESSION['user_id'] = $loggedInUser['user_id'];
         $_SESSION['username'] = $loggedInUser['username'];
         $_SESSION['role_id'] = $loggedInUser['role_id'];
 
-        // Redirect based on role
+        
         switch ($loggedInUser['role_id']) {
-            case 1: // Admin role ID
-                header('Location: ../pages/admin/dashboard.php');
+            case 1:
+                header('Location: ../pages/admin_dashboard.php');
                 exit();
-            case 2: // Enseignant role ID
-                header('Location: ../pages/enseignant/dashboard.php');
+            case 2:
+                header('Location: ../pages/enseignant_dashboard.php');
                 exit();
-            case 3: // Etudiant role ID
-                header('Location: ../pages/etudiant/dashboard.php');
+            case 3:
+                header('Location: ../pages/etudiant_page.php');
                 exit();
             default:
-                // Handle unexpected role ID (optional)
                 $_SESSION['login_error'] = "Rôle d'utilisateur inconnu.";
                 header('Location: ../pages/login.php');
                 exit();
         }
     } else {
-        // Login failed
+
         $_SESSION['login_error'] = "Identifiants incorrects.";
         header('Location: ../pages/login.php');
         exit();
     }
 } else {
-    // If accessed directly without submitting the form
     header('Location: ../pages/login.php');
     exit();
 }
