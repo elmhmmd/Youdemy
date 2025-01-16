@@ -72,19 +72,22 @@ class User
         $this->roleId = $roleId;
     }
 
-    public function signup($username, $email, $password)
+    public function signup($username, $email, $password, $roleId)
     {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
         try {
-            $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
+            $sql = "INSERT INTO users (username, email, password, role_id) VALUES (:username, :email, :password, :role_id)";
             $stmt = $this->db->prepare($sql);
-           $stmt->execute([
+            $stmt->execute([
                 'username' => $username,
                 'email' => $email,
                 'password' => $hashedPassword,
+                'role_id' => $roleId
             ]);
 
-            return true; // Signup successful
+            return true;
+            
         } catch (PDOException $e) {
             return "Signup failed: " . $e->getMessage();
         }

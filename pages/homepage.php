@@ -18,10 +18,10 @@
                     <span class="ml-2 text-2xl font-bold text-gray-900">Youdemy</span>
                 </div>
                 <div class="flex space-x-4">
-                    <a href="/login" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="./login.php" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                         Connexion
                     </a>
-                    <a href="/signup" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    <a href="./signup.php" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
                         S'inscrire
                     </a>
                 </div>
