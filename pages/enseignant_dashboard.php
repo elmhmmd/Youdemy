@@ -396,7 +396,6 @@
         cancelAddCourseButton.addEventListener('click', () => {
             addCourseModal.classList.add('hidden');
         });
-
         contentTypeVideoRadio.addEventListener('change', () => {
             videoContentInput.classList.remove('hidden');
             documentContentInput.classList.add('hidden');
