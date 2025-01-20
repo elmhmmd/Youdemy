@@ -1,6 +1,9 @@
 <?php
 require_once '../classes/database.php';
 require_once '../classes/user.php';
+require_once '../classes/admin.php';
+require_once '../classes/teacher.php';
+require_once '../classes/student.php';
 
 session_start();
 
@@ -45,8 +48,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $user = new User();
-    $signupResult = $user->signup($username, $email, $password, $roleId);
+    if (!empty($errors)) {
+        $_SESSION['form_errors'] = $errors;
+        header('Location: ../pages/signup.php');
+        exit;
+    }
+
+   
+    switch ($roleId) {
+        case 1:
+            $user = new admin(null, $username, $email, $password); 
+            break;
+        case 2:
+            $user = new teacher(null, $username, $email, $password);
+            break;
+        case 3:
+            $user = new student(null, $username, $email, $password);
+            break;
+        default:
+            $_SESSION['signup_error'] = "Rôle d'utilisateur invalide.";
+            header('Location: ../pages/signup.php');
+            exit;
+    }
+
+    
+    $signupResult = $user->signup($username, $email, $password);
    
 
     if ($signupResult === true) {

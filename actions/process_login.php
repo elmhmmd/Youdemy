@@ -1,6 +1,9 @@
 <?php
 require_once '../classes/database.php';
 require_once '../classes/user.php';
+require_once '../classes/admin.php';   
+require_once '../classes/teacher.php';  
+require_once '../classes/student.php'; 
 
 session_start();
 
@@ -29,12 +32,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         switch ($loggedInUser['role_id']) {
             case 1:
+                $user = new Admin(
+                    $loggedInUser['user_id'],
+                    $loggedInUser['username'],
+                    $loggedInUser['email'],
+                    null,
+                    $loggedInUser['status']
+                );
+                
                 header('Location: ../pages/admin_dashboard.php');
                 exit();
             case 2:
+                $user = new teacher(
+                    $loggedInUser['user_id'],
+                    $loggedInUser['username'],
+                    $loggedInUser['email'],
+                    null,
+                    $loggedInUser['status']
+                );
+                $_SESSION['user'] = $loggedInUser;
                 header('Location: ../pages/enseignant_dashboard.php');
                 exit();
             case 3:
+                $user = new student(
+                    $loggedInUser['user_id'],
+                    $loggedInUser['username'],
+                    $loggedInUser['email'],
+                    null,
+                    $loggedInUser['status']
+                );
+                $_SESSION['user'] = $loggedInUser;
                 header('Location: ../pages/etudiant_page.php');
                 exit();
             default:

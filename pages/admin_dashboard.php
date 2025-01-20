@@ -1,3 +1,32 @@
+<?php
+
+session_start();
+
+require_once '../classes/database.php';
+require_once '../classes/user.php';
+require_once '../classes/teacher.php';
+
+$teacher = new teacher();
+$pendingteachers = $teacher->getPendingTeachers();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ./login.php');
+    exit();
+}
+
+if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
+
+    if ($_SESSION['role_id'] == 2) {
+        header('Location: ./enseignant_dashboard.php');
+        exit();
+    } elseif ($_SESSION['role_id'] == 3) {
+        header('Location: ./etudiant_page.php');
+        exit();
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,7 +42,6 @@
         .admin-section.active {
             display: block;
         }
-        /* Ensure buttons in table cells have consistent height */
         #gestion-utilisateurs td button {
             padding-top: 0.5rem;
             padding-bottom: 0.5rem;
@@ -89,22 +117,22 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">Jean Dupont</td>
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">jean.dupont@example.com</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
-                                        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">Valider</button>
-                                        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Refuser</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">Sophie Martin</td>
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">sophie.martin@example.com</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
-                                        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">Valider</button>
-                                        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Refuser</button>
-                                    </td>
-                                </tr>
+                                <?php foreach ($pendingteachers as $teacher): ?>
+                                    <tr id="teacher-<?php echo $teacher['user_id']; ?>">
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle"><?php echo htmlspecialchars($teacher['username']); ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap align-middle"><?php echo htmlspecialchars($teacher['email']); ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
+                                        <form action="../actions/accept_teacher.php" method="post" class="inline-block">
+                                            <input type="hidden" name="teacher_id" value="<?php echo $teacher['user_id']; ?>">
+                                            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">Valider</button>
+                                        </form>
+                                        <form action="../actions/reject_teacher.php" method="post" class="inline-block">
+                                            <input type="hidden" name="teacher_id" value="<?php echo $teacher['user_id']; ?>">
+                                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Refuser</button>
+                                        </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
