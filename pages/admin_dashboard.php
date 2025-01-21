@@ -5,9 +5,16 @@ session_start();
 require_once '../classes/database.php';
 require_once '../classes/user.php';
 require_once '../classes/teacher.php';
+require_once '../classes/category.php';
+require_once '../classes/tag.php';
 
 $teacher = new teacher();
+$category = new category();
+$tag = new tag();
+
+$categories = $category->getAllCategories();
 $pendingteachers = $teacher->getPendingTeachers();
+$tags = $tag->getAllTags();
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: ./login.php');
@@ -234,72 +241,70 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
                 </section>
 
                 <!-- Gestion des Catégories -->
-                <section id="gestion-categories" class="admin-section bg-white shadow rounded-md p-4 mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-gray-800"><i class="fas fa-tags mr-2"></i> Gestion des Catégories</h3>
-                        <button id="addCategoryButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            <i class="fas fa-plus mr-2"></i> Ajouter une catégorie
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr data-category-id="1">
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">Programmation</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
-                                        <button class="text-red-600 hover:text-red-900 delete-category-btn">Supprimer</button>
-                                    </td>
-                                </tr>
-                                <tr data-category-id="2">
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">Marketing</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
-                                        <button class="text-red-600 hover:text-red-900 delete-category-btn">Supprimer</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+<section id="gestion-categories" class="admin-section bg-white shadow rounded-md p-4 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold text-gray-800"><i class="fas fa-tags mr-2"></i> Gestion des Catégories</h3>
+        <button id="addCategoryButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <i class="fas fa-plus mr-2"></i> Ajouter une catégorie
+        </button>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                    <?php foreach ($categories as $category): ?>
+                        <tr data-category-id="<?php echo $category->getCategoryId(); ?>">
+                            <td class="px-6 py-4 whitespace-nowrap align-middle"><?php echo htmlspecialchars($category->getCategoryName()); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
+                                <form action="../actions/delete_category.php" method="post" class="inline-block">
+                                    <input type="hidden" name="category_id" value="<?php echo $category->getCategoryId(); ?>">
+                                    <button type="submit" class="text-red-600 hover:text-red-900 delete-category-btn">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</section>
 
                 <!-- Gestion des Tags -->
-                <section id="gestion-tags" class="admin-section bg-white shadow rounded-md p-4 mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-gray-800"><i class="fas fa-hashtag mr-2"></i> Gestion des Tags</h3>
-                        <button id="addBulkTagsButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            <i class="fas fa-plus-circle mr-2"></i> Insertion en masse
-                        </button>
+        <section id="gestion-tags" class="admin-section bg-white shadow rounded-md p-4 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800"><i class="fas fa-hashtag mr-2"></i> Gestion des Tags</h3>
+                    <button id="addBulkTagsButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <i class="fas fa-plus-circle mr-2"></i> Insertion en masse
+                    </button>
                     </div>
-                    <div class="overflow-x-auto">
+                <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">javascript</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
-                                        <button class="text-red-600 hover:text-red-900">Supprimer</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap align-middle">seo</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
-                                        <button class="text-red-600 hover:text-red-900">Supprimer</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                        <?php foreach ($tags as $tag): ?>
+                            <tr data-tag-id="<?php echo $tag['tag_id']; ?>">
+                                <td class="px-6 py-4 whitespace-nowrap align-middle"><?php echo htmlspecialchars($tag['tag_name']); ?></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
+                                    <form action="../actions/delete_tag.php" method="post" class="inline-block">
+                                        <input type="hidden" name="tag_id" value="<?php echo $tag['tag_id']; ?>">
+                                        <button type="submit" class="text-red-600 hover:text-red-900 delete-tag-btn">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
                 <!-- Statistiques Globales -->
                 <section id="statistiques-globales" class="admin-section bg-white shadow rounded-md p-4 mb-6">
@@ -336,8 +341,8 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
                     </div>
                 </section>
 
-                <!-- Add Category Modal -->
-                <div id="addCategoryModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                              <!-- Add Category Modal -->
+                              <div id="addCategoryModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
                         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
@@ -349,7 +354,7 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
                                             Ajouter une catégorie
                                         </h3>
                                         <div class="mt-2">
-                                            <form id="addCategoryForm">
+                                            <form id="addCategoryForm" action="../actions/add_category.php" method="POST">
                                                 <div class="mb-4">
                                                     <label for="categoryName" class="block text-gray-700 text-sm font-bold mb-2">Nom de la catégorie</label>
                                                     <input type="text" id="categoryName" name="categoryName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nom de la catégorie">
@@ -360,9 +365,9 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
                                 </div>
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto">
-                                    Ajouter
-                                </button>
+                            <button type="submit" form="addCategoryForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto">
+                                Ajouter
+                            </button>
                                 <button id="cancelAddCategory" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto">
                                     Annuler
                                 </button>
@@ -372,39 +377,39 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
                 </div>
 
                 <!-- Add Bulk Tags Modal -->
-                <div id="addBulkTagsModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
-                        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <div class="sm:flex sm:items-start">
-                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title-add-bulk-tags">
-                                            Insertion en masse de tags
-                                        </h3>
-                                        <div class="mt-2">
-                                            <form id="addBulkTagsForm">
-                                                <div class="mb-4">
-                                                    <label for="tagsInput" class="block text-gray-700 text-sm font-bold mb-2">Tags (séparés par des virgules)</label>
-                                                    <textarea id="tagsInput" name="tagsInput" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="tag1, tag2, tag3"></textarea>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
+<div id="addBulkTagsModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title-add-bulk-tags">
+                            Insertion en masse de tags
+                        </h3>
+                        <div class="mt-2">
+                            <form id="addBulkTagsForm" action="../actions/add_tags.php" method="POST">
+                                <div class="mb-4">
+                                    <label for="tagsInput" class="block text-gray-700 text-sm font-bold mb-2">Tags (séparés par des virgules)</label>
+                                    <textarea id="tagsInput" name="tagString" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="tag1, tag2, tag3"></textarea>
                                 </div>
-                            </div>
-                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto">
-                                    Ajouter
-                                </button>
-                                <button id="cancelAddBulkTags" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto">
-                                    Annuler
-                                </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="submit" form="addBulkTagsForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto">
+                    Ajouter
+                </button>
+                <button id="cancelAddBulkTags" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
             </main>
         </div>
@@ -523,24 +528,6 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
                     if (row) {
                         const courseTitle = row.querySelector('td:first-child').textContent;
                         console.log(`Supprimer le cours: ${courseTitle}`);
-                        // The actual deletion will be handled by the backend (PHP)
-                        row.remove(); // For demonstration
-                    }
-                }
-            });
-        }
-
-        // Category Management Actions
-        const categoryTableBody = document.querySelector('#gestion-categories tbody');
-        if (categoryTableBody) {
-            categoryTableBody.addEventListener('click', function(event) {
-                const target = event.target;
-                if (target.classList.contains('delete-category-btn')) {
-                    const row = target.closest('tr');
-                    if (row) {
-                        const categoryId = row.dataset.categoryId;
-                        const categoryName = row.querySelector('td:first-child').textContent;
-                        console.log(`Supprimer la catégorie "${categoryName}" avec l'ID: ${categoryId}`);
                         // The actual deletion will be handled by the backend (PHP)
                         row.remove(); // For demonstration
                     }
