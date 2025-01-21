@@ -1,6 +1,6 @@
 <?php
 
-class Category
+class category
 {
     private $categoryId;
     private $categoryName;
@@ -33,6 +33,19 @@ class Category
     public function setCategoryName($categoryName)
     {
         $this->categoryName = $categoryName;
+    }
+
+    
+    public function getCategoryNameById($categoryId) {
+        try {
+            $sql = "SELECT category_name FROM categories WHERE category_id = :category_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['category_id' => $categoryId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result['category_name'] : 'Unknown Category';
+        } catch (PDOException $e) {
+            return 'Error fetching category';
+        }
     }
 
     public function addCategory()
@@ -76,4 +89,5 @@ class Category
             return "Error fetching categories: " . $e->getMessage();
         }
     }
+
 }

@@ -100,7 +100,7 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-end h-16 items-center">
                         <div class="flex items-center space-x-4">
-                            <a href="#" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="../actions/logout.php" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                                 <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
                             </a>
                         </div>

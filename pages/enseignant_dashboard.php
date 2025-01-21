@@ -1,3 +1,42 @@
+<?php
+
+session_start();
+
+require_once '../classes/database.php';
+require_once '../classes/user.php';
+require_once '../classes/course.php';
+require_once '../classes/category.php';
+
+$course = new course();
+$categoryobj = new category();
+$categories = $categoryobj->getAllCategories();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login.php');
+    exit();
+}
+
+if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 2) {
+
+    if ($_SESSION['role_id'] == 1) {
+        header('Location: ./admin_dashboard.php');
+        exit();
+    } elseif ($_SESSION['role_id'] == 3) {
+        header('Location: ./etudiant_page.php');
+        exit();
+    } else {
+        header('Location: ./login.php');
+        exit();
+    }
+}
+$teacherId = $_SESSION['user_id'];
+$courses = $course->getCoursesByTeacherId($teacherId);
+$courseCount = count($courses); 
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -22,7 +61,7 @@
                     <button id="addCourseButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         <i class="fas fa-plus mr-2"></i> Ajouter un cours
                     </button>
-                    <a href="#" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="../actions/logout.php" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                         Déconnexion
                     </a>
                 </div>
@@ -34,8 +73,8 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 class="text-2xl font-semibold text-gray-900 mb-4">Tableau de Bord Enseignant</h2>
 
-        <!-- Course Statistics -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <!-- Course Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <div class="bg-white shadow rounded-md p-4">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-blue-500 text-white rounded-md p-2">
@@ -54,7 +93,7 @@
                     </div>
                     <div class="ml-4">
                         <dt class="text-sm font-medium text-gray-500">Nombre de Cours</dt>
-                        <dd class="text-lg font-semibold text-gray-900">12</dd>
+                        <dd class="text-lg font-semibold text-gray-900"><?= $courseCount ?></dd>
                     </div>
                 </div>
             </div>
@@ -71,8 +110,8 @@
             </div>
         </div>
 
-        <!-- Course Table -->
-        <div class="bg-white shadow rounded-md overflow-hidden">
+                <!-- Course Table -->
+                <div class="bg-white shadow rounded-md overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -94,52 +133,41 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">Introduction à Python</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-normal max-w-sm overflow-hidden text-ellipsis">
-                            <div class="text-sm text-gray-500">Apprenez les bases du langage de programmation Python, de la syntaxe aux structures de données.</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                Programmation
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            35
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button data-course-id="1" class="consultInscriptionsButton text-indigo-600 hover:text-indigo-900 mr-2">Consulter</button>
-                            <button data-course-id="1" class="modifyCourseButton text-green-600 hover:text-green-900 mr-2">Modifier</button>
-                            <button data-course-id="1" class="deleteCourseButton text-red-600 hover:text-red-900">Supprimer</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">Marketing Digital Avancé</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-normal max-w-sm overflow-hidden text-ellipsis">
-                            <div class="text-sm text-gray-500">Stratégies avancées pour le marketing en ligne, SEO, publicité et réseaux sociaux.</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                Marketing
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            62
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button data-course-id="2" class="consultInscriptionsButton text-indigo-600 hover:text-indigo-900 mr-2">Consulter</button>
-                            <button data-course-id="2" class="modifyCourseButton text-green-600 hover:text-green-900 mr-2">Modifier</button>
-                            <button data-course-id="2" class="deleteCourseButton text-red-600 hover:text-red-900">Supprimer</button>
-                        </td>
-                    </tr>
-                    </tbody>
+                    <?php if (empty($courses)): ?>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap" colspan="5">
+                                <div class="text-sm text-gray-500 text-center">Aucun cours trouvé.</div>
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($courses as $courseobj): ?>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900"><?= htmlspecialchars($courseobj->getTitle()) ?></div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-normal max-w-sm overflow-hidden text-ellipsis">
+                                    <div class="text-sm text-gray-500"><?= htmlspecialchars($courseobj->getDescription()) ?></div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        <?=htmlspecialchars($categoryobj->getCategoryNameById($courseobj->getCategoryId()));?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <!-- You'll need to implement a way to count enrolled students for each course -->
+                                    0
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button data-course-id="<?= $courseobj->getCourseId() ?>" class="consultInscriptionsButton text-indigo-600 hover:text-indigo-900 mr-2">Consulter</button>
+                                    <button data-course-id="<?= $courseobj->getCourseId() ?>" class="modifyCourseButton text-green-600 hover:text-green-900 mr-2">Modifier</button>
+                                    <button data-course-id="<?= $courseobj->getCourseId() ?>" class="deleteCourseButton text-red-600 hover:text-red-900">Supprimer</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
             </table>
         </div>
-
         <!-- Add Course Modal -->
         <div id="addCourseModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -153,37 +181,37 @@
                                     Ajouter un nouveau cours
                                 </h3>
                                 <div class="mt-2">
-                                    <form id="addCourseForm">
+                                    <form id="addCourseForm" action="../actions/add_course.php" method="POST" enctype="multipart/form-data">
                                         <div class="mb-4">
                                             <label for="courseTitle" class="block text-gray-700 text-sm font-bold mb-2">Titre</label>
-                                            <input type="text" id="courseTitle" name="courseTitle" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Titre du cours">
+                                            <input type="text" id="courseTitle" name="title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Titre du cours">
                                         </div>
                                         <div class="mb-4">
                                             <label for="courseDescription" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                                            <textarea id="courseDescription" name="courseDescription" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Description du cours"></textarea>
+                                            <textarea id="courseDescription" name="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Description du cours"></textarea>
                                         </div>
                                         <div class="mb-4">
                                             <label class="block text-gray-700 text-sm font-bold mb-2">Contenu</label>
                                             <div class="flex items-center mb-2">
-                                                <input type="radio" id="contentTypeVideo" name="contentType" value="video" class="mr-2">
+                                                <input type="radio" id="contentTypeVideo" name="content_type" value="video" class="mr-2">
                                                 <label for="contentTypeVideo" class="text-gray-700 text-sm">Vidéo</label>
-                                                <input type="radio" id="contentTypeDocument" name="contentType" value="document" class="ml-4 mr-2">
+                                                <input type="radio" id="contentTypeDocument" name="content_type" value="document" class="ml-4 mr-2">
                                                 <label for="contentTypeDocument" class="text-gray-700 text-sm">Document</label>
                                             </div>
                                             <div id="videoContentInput" class="hidden">
-                                                <input type="url" id="courseVideoUrl" name="courseVideoUrl" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Lien de la vidéo">
+                                                <input type="url" id="courseVideoUrl" name="content_url" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Lien de la vidéo">
                                             </div>
                                             <div id="documentContentInput" class="hidden">
-                                                <input type="file" id="courseDocument" name="courseDocument" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                <input type="file" id="courseDocument" name="content_document" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                             </div>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label for="courseTags" class="block text-gray-700 text-sm font-bold mb-2">Tags</label>
-                                            <input type="text" id="courseTags" name="courseTags" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Mots-clés séparés par des virgules">
                                         </div>
                                         <div class="mb-4">
                                             <label for="courseCategory" class="block text-gray-700 text-sm font-bold mb-2">Catégorie</label>
-                                            <input type="text" id="courseCategory" name="courseCategory" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Catégorie du cours">
+                                            <select id="courseCategory" name="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                            <?php foreach ($categories as $cat): ?>
+                                                <option value="<?= $cat->getCategoryId() ?>"><?= htmlspecialchars($cat->getCategoryName()) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
                                         </div>
                                     </form>
                                 </div>
@@ -191,7 +219,7 @@
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto">
+                        <button type="button" onclick="document.getElementById('addCourseForm').submit();" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             Enregistrer
                         </button>
                         <button id="cancelAddCourse" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto">
@@ -421,8 +449,8 @@
                 const courseId = button.dataset.courseId;
                 const courseTitleElement = button.closest('tr').querySelector('.font-medium.text-gray-900');
                 courseTitleInscriptions.textContent = courseTitleElement.textContent;
-                // In a real application, you would fetch inscriptions for courseId here
-                // and populate the inscriptionsTableBody. For now, we'll use dummy data.
+                // you would fetch inscriptions for courseId here
+                // and populate the inscriptionsTableBody.
                 inscriptionsTableBody.innerHTML = `
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -452,8 +480,8 @@
         modifyCourseButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const courseId = button.dataset.courseId;
-                // In a real application, you would fetch the course details for courseId here
-                // and populate the modifyCourseForm fields. For now, we'll set some dummy data.
+                // you would fetch the course details for courseId here
+                // and populate the modifyCourseForm fields.
                 document.getElementById('modifyCourseId').value = courseId;
                 document.getElementById('modifyCourseTitle').value = `Course Title ${courseId}`;
                 document.getElementById('modifyCourseDescription').value = `Description for course ${courseId}`;
