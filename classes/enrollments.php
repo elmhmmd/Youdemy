@@ -45,5 +45,40 @@ class enrollments {
             return false;
         }
     }
+
+
+    public function getEnrolledCoursesByStudentId($studentId) {
+        try {
+
+            $sql = "SELECT course_id FROM enrollments WHERE user_id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$studentId]);
+            $enrollments = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    
+            if (empty($enrollments)) return [];
+    
+            
+            $placeholders = implode(',', array_fill(0, count($enrollments), '?'));
+            $sql = "SELECT 
+                        c.course_id,
+                        c.title,
+                        c.description,
+                        cat.category_name,
+                        u.username as teacher_name
+                    FROM courses c
+                    JOIN categories cat ON c.category_id = cat.category_id
+                    JOIN users u ON c.teacher_id = u.user_id
+                    WHERE c.course_id IN ($placeholders)";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($enrollments);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        } catch (PDOException $e) {
+            error_log("Error fetching enrolled courses: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 ?>

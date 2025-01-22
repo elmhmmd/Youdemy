@@ -27,7 +27,7 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
         header('Location: ./enseignant_dashboard.php');
         exit();
     } elseif ($_SESSION['role_id'] == 3) {
-        header('Location: ./etudiant_page.php');
+        header('Location: ./catalogue.php');
         exit();
     }
 }

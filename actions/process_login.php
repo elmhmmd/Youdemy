@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $loggedInUser['status']
                 );
                 $_SESSION['user'] = $loggedInUser;
-                header('Location: ../pages/etudiant_page.php');
+                header('Location: ../pages/catalogue.php');
                 exit();
             default:
                 $_SESSION['login_error'] = "Rôle d'utilisateur inconnu.";

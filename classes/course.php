@@ -237,4 +237,29 @@ public function deleteCourse($courseId) {
     }
 }
 
+public function getCourseById($courseId) {
+    try {
+        $sql = "SELECT * FROM courses WHERE course_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$courseId]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$data) return null;
+
+        return new course(
+            $data['course_id'],
+            $data['title'],
+            $data['description'],
+            $data['content_type'],
+            $data['content_url'],
+            $data['content_text'],
+            $data['teacher_id'],
+            $data['category_id']
+        );
+    } catch (PDOException $e) {
+        error_log("Error fetching course: " . $e->getMessage());
+        return null;
+    }
+}
+
 }
