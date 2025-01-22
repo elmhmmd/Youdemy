@@ -153,284 +153,245 @@ $totalVideos = $courseObj->getTotalVideosForTeacher($teacherId);
         </div>
 
         <!-- Add Course Modal -->
-<div id="addCourseModal" class="hidden fixed z-10 inset-0 overflow-y-auto">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-        
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-            <form action="../actions/add_course.php" method="POST" enctype="multipart/form-data">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Ajouter un nouveau cours</h3>
-                            
-                            <div class="mb-4">
-                                <label for="courseTitle" class="block text-gray-700 text-sm font-bold mb-2">Titre</label>
-                                <input type="text" id="courseTitle" name="title" required
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Titre du cours">
-                            </div>
+        <div id="addCourseModal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                    <form action="../actions/add_course.php" method="POST" enctype="multipart/form-data">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Ajouter un nouveau cours</h3>
+                                    
+                                    <div class="mb-4">
+                                        <label for="courseTitle" class="block text-gray-700 text-sm font-bold mb-2">Titre</label>
+                                        <input type="text" id="courseTitle" name="title" required
+                                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
 
-                            <div class="mb-4">
-                                <label for="courseDescription" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                                <textarea id="courseDescription" name="description" required
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows="4"
-                                    placeholder="Description du cours"></textarea>
-                            </div>
+                                    <div class="mb-4">
+                                        <label for="courseDescription" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                                        <textarea id="courseDescription" name="description" required
+                                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            rows="4"></textarea>
+                                    </div>
 
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Type de contenu</label>
-                                <div class="flex items-center space-x-4">
-                                    <label class="flex items-center">
-                                        <input type="radio" name="content_type" value="video" checked 
-                                            class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out">
-                                        <span class="ml-2">Vidéo</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="content_type" value="document"
-                                            class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out">
-                                        <span class="ml-2">Document</span>
-                                    </label>
+                                    <div class="mb-4">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Type de contenu</label>
+                                        <div class="flex items-center space-x-4">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="content_type" value="video" checked 
+                                                    class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out">
+                                                <span class="ml-2">Vidéo</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="content_type" value="document"
+                                                    class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out">
+                                                <span class="ml-2">Document</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4" id="videoField">
+                                        <label for="contentUrl" class="block text-gray-700 text-sm font-bold mb-2">URL de la vidéo</label>
+                                        <input type="url" id="contentUrl" name="content_url"
+                                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+
+                                    <div class="mb-4 hidden" id="documentField">
+                                        <label for="contentDocument" class="block text-gray-700 text-sm font-bold mb-2">Téléverser un document</label>
+                                        <input type="file" id="contentDocument" name="content_document"
+                                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            accept=".pdf,.doc,.docx,.txt">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="courseCategory" class="block text-gray-700 text-sm font-bold mb-2">Catégorie</label>
+                                        <select id="courseCategory" name="category_id" required
+                                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <?php foreach ($categories as $category): ?>
+                                                <option value="<?= $category->getCategoryId() ?>">
+                                                    <?= htmlspecialchars($category->getCategoryName()) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="courseTags" class="block text-gray-700 text-sm font-bold mb-2">Tags</label>
+                                        <select id="courseTags" name="tags[]" multiple
+                                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            style="height: 100px;">
+                                            <?php foreach ($tags as $tag): ?>
+                                                <option value="<?= $tag['tag_id'] ?>">
+                                                    <?= htmlspecialchars($tag['tag_name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <p class="text-sm text-gray-500 mt-1">Maintenez Ctrl/Cmd pour sélectionner multiple tags</p>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="submit" 
+                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto">
+                                Enregistrer
+                            </button>
+                            <button type="button" 
+                                    onclick="closeAddModal()"
+                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-                            <div class="mb-4" id="videoField">
-                                <label for="contentUrl" class="block text-gray-700 text-sm font-bold mb-2">URL de la vidéo</label>
-                                <input type="url" id="contentUrl" name="content_url"
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="https://example.com/video">
+        <!-- Consultation Modal -->
+        <div id="consultModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
+            <div class="relative mx-auto p-4 w-full max-w-2xl top-20">
+                <div class="bg-white rounded-lg shadow-xl">
+                    <div class="flex justify-between items-start p-4 border-b">
+                        <h3 class="text-xl font-semibold" id="consultTitle"></h3>
+                        <button onclick="closeConsultModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-bold mb-2">Description:</label>
+                            <p id="consultDescription" class="text-gray-600 whitespace-pre-wrap"></p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-bold mb-2">Étudiants inscrits:</label>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left py-2">Nom</th>
+                                            <th class="text-left py-2">Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="consultStudents">
+                                        <!-- Les étudiants seront ajoutés dynamiquement ici -->
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
 
-                            <div class="mb-4 hidden" id="documentField">
-                                <label for="contentDocument" class="block text-gray-700 text-sm font-bold mb-2">Téléverser un document</label>
-                                <input type="file" id="contentDocument" name="content_document"
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    accept=".pdf,.doc,.docx,.txt">
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="courseCategory" class="block text-gray-700 text-sm font-bold mb-2">Catégorie</label>
-                                <select id="courseCategory" name="category_id" required
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <?php foreach ($categories as $category): ?>
-                                        <option value="<?= $category->getCategoryId() ?>">
-                                            <?= htmlspecialchars($category->getCategoryName()) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="courseTags" class="block text-gray-700 text-sm font-bold mb-2">Tags</label>
-                                <select id="courseTags" name="tags[]" multiple
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    style="height: 100px;">
-                                    <?php foreach ($tags as $tag): ?>
-                                        <option value="<?= $tag['tag_id'] ?>">
-                                            <?= htmlspecialchars($tag['tag_name']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <p class="text-sm text-gray-500 mt-1">Maintenez Ctrl/Cmd pour sélectionner multiple tags</p>
-                            </div>
+                        <div class="flex justify-end">
+                            <button onclick="closeConsultModal()" 
+                                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                                Fermer
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="submit" 
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto">
-                        Enregistrer
-                    </button>
-                    <button type="button" 
-                            onclick="closeAddModal()"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto">
-                        Annuler
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-<script>
-    // Gestion des types de contenu
-    const videoRadio = document.querySelector('input[value="video"]');
-    const documentRadio = document.querySelector('input[value="document"]');
-    const videoField = document.getElementById('videoField');
-    const documentField = document.getElementById('documentField');
-
-    function toggleContentFields() {
-        if (videoRadio.checked) {
-            videoField.classList.remove('hidden');
-            documentField.classList.add('hidden');
-            documentField.querySelector('input').removeAttribute('required');
-            videoField.querySelector('input').setAttribute('required', '');
-        } else {
-            videoField.classList.add('hidden');
-            documentField.classList.remove('hidden');
-            videoField.querySelector('input').removeAttribute('required');
-            documentField.querySelector('input').setAttribute('required', '');
-        }
-    }
-
-    videoRadio.addEventListener('change', toggleContentFields);
-    documentRadio.addEventListener('change', toggleContentFields);
-
-    // Initialisation
-    toggleContentFields();
-</script>
-
-<script>
-    // Gestion des types de contenu
-    const videoRadio = document.querySelector('input[value="video"]');
-    const documentRadio = document.querySelector('input[value="document"]');
-    const videoField = document.getElementById('videoField');
-    const documentField = document.getElementById('documentField');
-
-    function toggleContentFields() {
-        if (videoRadio.checked) {
-            videoField.classList.remove('hidden');
-            documentField.classList.add('hidden');
-            documentField.querySelector('input').removeAttribute('required');
-            videoField.querySelector('input').setAttribute('required', '');
-        } else {
-            videoField.classList.add('hidden');
-            documentField.classList.remove('hidden');
-            videoField.querySelector('input').removeAttribute('required');
-            documentField.querySelector('input').setAttribute('required', '');
-        }
-    }
-
-    videoRadio.addEventListener('change', toggleContentFields);
-    documentRadio.addEventListener('change', toggleContentFields);
-
-    // Initialisation
-    toggleContentFields();
-</script>
-
-       <!-- Consultation Modal -->
-<div id="consultModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
-    <div class="relative mx-auto p-4 w-full max-w-2xl top-20">
-        <div class="bg-white rounded-lg shadow-xl">
-            <div class="flex justify-between items-start p-4 border-b">
-                <h3 class="text-xl font-semibold" id="consultTitle"></h3>
-                <button onclick="closeConsultModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="p-6 space-y-4">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Description:</label>
-                    <p id="consultDescription" class="text-gray-600 whitespace-pre-wrap"></p>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Étudiants inscrits:</label>
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <table class="w-full">
-                            <thead>
-                                <tr>
-                                    <th class="text-left py-2">Nom</th>
-                                    <th class="text-left py-2">Email</th>
-                                </tr>
-                            </thead>
-                            <tbody id="consultStudents">
-                                <!-- Les étudiants seront ajoutés dynamiquement ici -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="flex justify-end">
-                    <button onclick="closeConsultModal()" 
-                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
-                        Fermer
-                    </button>
-                </div>
             </div>
         </div>
-    </div>
-</div>
-
-<script>
-    // Gestion de la modal de consultation
-    function showConsultModal(courseId) {
-        fetch(`../actions/get_course_details.php?course_id=${courseId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('consultTitle').textContent = data.title;
-                document.getElementById('consultDescription').textContent = data.description;
-                
-                const tbody = document.getElementById('consultStudents');
-                tbody.innerHTML = data.students.map(student => `
-                    <tr>
-                        <td class="py-2">${student.username}</td>
-                        <td class="py-2">${student.email}</td>
-                    </tr>
-                `).join('');
-                
-                document.getElementById('consultModal').classList.remove('hidden');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Erreur lors du chargement des détails du cours');
-            });
-    }
-
-    function closeConsultModal() {
-        document.getElementById('consultModal').classList.add('hidden');
-    }
-</script>
     </main>
 
     <script>
-        // Course consultation
+        // Gestion des modales
+        const addCourseButton = document.getElementById('addCourseButton');
+        const addCourseModal = document.getElementById('addCourseModal');
+        const videoRadio = document.querySelector('input[value="video"]');
+        const documentRadio = document.querySelector('input[value="document"]');
+        const videoField = document.getElementById('videoField');
+        const documentField = document.getElementById('documentField');
+
+        // Ouvrir modal d'ajout
+        addCourseButton.addEventListener('click', () => {
+            addCourseModal.classList.remove('hidden');
+        });
+
+        // Fermer modal d'ajout
+        function closeAddModal() {
+            addCourseModal.classList.add('hidden');
+        }
+
+        // Basculer entre les types de contenu
+        function toggleContentFields() {
+            if (videoRadio.checked) {
+                videoField.classList.remove('hidden');
+                documentField.classList.add('hidden');
+                documentField.querySelector('input').removeAttribute('required');
+                videoField.querySelector('input').setAttribute('required', '');
+            } else {
+                videoField.classList.add('hidden');
+                documentField.classList.remove('hidden');
+                videoField.querySelector('input').removeAttribute('required');
+                documentField.querySelector('input').setAttribute('required', '');
+            }
+        }
+
+        videoRadio.addEventListener('change', toggleContentFields);
+        documentRadio.addEventListener('change', toggleContentFields);
+        toggleContentFields();
+
+        // Gestion de la consultation
         document.querySelectorAll('.consult-course').forEach(button => {
             button.addEventListener('click', async () => {
                 const courseId = button.dataset.courseId;
-                const response = await fetch(`../actions/get_course_details.php?course_id=${courseId}`);
-                const courseDetails = await response.json();
-
-                document.getElementById('consultTitle').textContent = courseDetails.title;
-                document.getElementById('consultDescription').textContent = courseDetails.description;
-                
-                const studentsList = courseDetails.students.map(student => 
-                    `<li>${student.username} (${student.email})</li>`
-                ).join('');
-                document.getElementById('consultStudents').innerHTML = studentsList;
-                
-                document.getElementById('consultModal').classList.remove('hidden');
-            });
-        });
-
-        // Modify course
-        document.querySelectorAll('.modify-course').forEach(button => {
-            button.addEventListener('click', async () => {
-                const courseId = button.dataset.courseId;
-                // Fetch course details and populate modify form
-                // Similar implementation to consultation
-            });
-        });
-
-        // Delete course
-        document.querySelectorAll('.delete-course').forEach(button => {
-            button.addEventListener('click', async () => {
-                const courseId = button.dataset.courseId;
-                if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
-                    const response = await fetch(`../actions/delete_course.php?course_id=${courseId}`);
-                    if (response.ok) {
-                        location.reload();
-                    }
+                try {
+                    const response = await fetch(`../actions/get_course_details.php?course_id=${courseId}`);
+                    const data = await response.json();
+                    
+                    document.getElementById('consultTitle').textContent = data.title;
+                    document.getElementById('consultDescription').textContent = data.description;
+                    
+                    const tbody = document.getElementById('consultStudents');
+                    tbody.innerHTML = data.students.map(student => `
+                        <tr>
+                            <td class="py-2">${student.username}</td>
+                            <td class="py-2">${student.email}</td>
+                        </tr>
+                    `).join('');
+                    
+                    document.getElementById('consultModal').classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erreur lors du chargement des détails du cours');
                 }
             });
         });
 
+        // Fermer modal de consultation
         function closeConsultModal() {
             document.getElementById('consultModal').classList.add('hidden');
         }
+
+        // Suppression de cours
+        document.querySelectorAll('.delete-course').forEach(button => {
+            button.addEventListener('click', async () => {
+                const courseId = button.dataset.courseId;
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('course_id', courseId);
+                        
+                        const response = await fetch('../actions/delete_course.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('Erreur lors de la suppression');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Erreur lors de la suppression');
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
