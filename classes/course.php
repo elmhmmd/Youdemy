@@ -87,42 +87,6 @@ class course {
         $this->categoryId = $categoryId;
     }
 
-    public function getAllCourses() {
-        try {
-            $sql = "SELECT 
-                course_id, 
-                title, 
-                description, 
-                content_type, 
-                content_url, 
-                content_text, 
-                teacher_id, 
-                category_id
-            FROM courses";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $coursesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            $courses = [];
-            foreach ($coursesData as $data) {
-                $courses[] = new course(
-                    $data['course_id'],
-                    $data['title'],
-                    $data['description'],
-                    $data['content_type'],
-                    $data['content_url'],
-                    $data['content_text'],
-                    $data['teacher_id'],
-                    $data['category_id']
-                );
-            }
-            return $courses;
-        } catch (PDOException $e) {
-            error_log("Error fetching courses: " . $e->getMessage());
-            return [];
-        }
-    }
-
     public function getCoursesByTeacherId($teacherId) {
         try {
             $sql = "SELECT 
@@ -260,6 +224,69 @@ public function getCourseById($courseId) {
         error_log("Error fetching course: " . $e->getMessage());
         return null;
     }
+}
+
+
+public function getAllCourses() {
+    try {
+        $sql = "SELECT * FROM courses ORDER BY course_id DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $coursesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $courses = [];
+        foreach ($coursesData as $data) {
+            $courses[] = new course(
+                $data['course_id'],
+                $data['title'],
+                $data['description'],
+                $data['content_type'],
+                $data['content_url'],
+                $data['content_text'],
+                $data['teacher_id'],
+                $data['category_id']
+            );
+        }
+        return $courses;
+    } catch (PDOException $e) {
+        error_log("Error fetching courses: " . $e->getMessage());
+        return [];
+    }
+}
+
+public function getTotalCourseCount() {
+    try {
+        $sql = "SELECT COUNT(*) FROM courses";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    } catch (PDOException $e) {
+        error_log("Error counting courses: " . $e->getMessage());
+        return 0;
+    }
+}
+
+public function getCategoryDistribution() {
+    try {
+        $sql = "SELECT c.category_name, COUNT(*) as course_count
+                FROM courses co
+                JOIN categories c ON co.category_id = c.category_id
+                GROUP BY co.category_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting category distribution: " . $e->getMessage());
+        return [];
+    }
+}
+
+public function getTotalVideosForTeacher($teacherId) {
+    $sql = "SELECT COUNT(*) FROM courses 
+            WHERE teacher_id = ? AND content_type = 'video'";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$teacherId]);
+    return $stmt->fetchColumn();
 }
 
 }

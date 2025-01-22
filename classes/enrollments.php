@@ -80,5 +80,40 @@ class enrollments {
             return [];
         }
     }
+
+        public function getMostPopularCourses($limit = 3) {
+            try {
+                $sql = "SELECT c.course_id, c.title, COUNT(e.user_id) as enrollment_count
+                        FROM enrollments e
+                        JOIN courses c ON e.course_id = c.course_id
+                        GROUP BY c.course_id
+                        ORDER BY enrollment_count DESC
+                        LIMIT ?";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute([$limit]);
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log("Error fetching popular courses: " . $e->getMessage());
+                return [];
+            }
+        }
+
+        public function getTotalStudentsForTeacher($teacherId) {
+            $sql = "SELECT COUNT(DISTINCT e.user_id) 
+                    FROM enrollments e
+                    JOIN courses c ON e.course_id = c.course_id
+                    WHERE c.teacher_id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$teacherId]);
+            return $stmt->fetchColumn();
+        }
+        
+        public function getEnrollmentCount($courseId) {
+            $sql = "SELECT COUNT(*) FROM enrollments WHERE course_id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$courseId]);
+            return $stmt->fetchColumn();
+        }
+
 }
 ?>

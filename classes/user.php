@@ -131,5 +131,66 @@ class user
                     return "Login failed: " . $e->getMessage();
             }
         }
+
+public function getAllUsersWithRoles() {
+    try {
+        $sql = "SELECT u.*, r.role_name 
+                FROM users u
+                JOIN roles r ON u.role_id = r.role_id
+                ORDER BY u.user_id DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error fetching users: " . $e->getMessage());
+        return [];
+    }
+}
+
+public function toggleUserStatus($userId) {
+    try {
+        $sql = "UPDATE users SET status = 
+                CASE 
+                    WHEN status = 'activated' THEN 'suspended'
+                    ELSE 'activated' 
+                END
+                WHERE user_id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$userId]);
+    } catch (PDOException $e) {
+        error_log("Error toggling user status: " . $e->getMessage());
+        return false;
+    }
+}
+
+public function deleteUser($userId) {
+    try {
+        $sql = "DELETE FROM users WHERE user_id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$userId]);
+    } catch (PDOException $e) {
+        error_log("Error deleting user: " . $e->getMessage());
+        return false;
+    }
+}
+
+public function getTopTeachers($limit = 3) {
+    try {
+        $sql = "SELECT u.user_id, u.username, COUNT(c.course_id) as course_count
+                FROM users u
+                JOIN courses c ON u.user_id = c.teacher_id
+                WHERE u.role_id = 2
+                GROUP BY u.user_id
+                ORDER BY course_count DESC
+                LIMIT ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error fetching top teachers: " . $e->getMessage());
+        return [];
+    }
+}
+
 }
 ?>
