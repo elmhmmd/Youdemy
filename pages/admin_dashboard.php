@@ -223,8 +223,9 @@ $topTeachers = $userObj->getTopTeachers(3);
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-semibold text-gray-800"><i class="fas fa-tags mr-2"></i> Gestion des Catégories</h3>
                         <button id="addCategoryButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-                            <i class="fas fa-plus mr-2"></i> Ajouter
-                        </button>
+    <i class="fas fa-plus mr-2"></i> Ajouter
+</button>
+
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -256,8 +257,8 @@ $topTeachers = $userObj->getTopTeachers(3);
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-semibold text-gray-800"><i class="fas fa-hashtag mr-2"></i> Gestion des Tags</h3>
                         <button id="addTagButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-                            <i class="fas fa-plus mr-2"></i> Ajouter
-                        </button>
+    <i class="fas fa-plus mr-2"></i> Ajouter
+</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -327,6 +328,72 @@ $topTeachers = $userObj->getTopTeachers(3);
                         </div>
                     </div>
                 </section>
+                <!-- Add Category Modal -->
+<div id="addCategoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
+    <div class="relative mx-auto p-4 w-full max-w-md top-20">
+        <div class="bg-white rounded-lg shadow-xl">
+            <div class="flex justify-between items-start p-4 border-b">
+                <h3 class="text-xl font-semibold">Ajouter une Catégorie</h3>
+                <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form action="../actions/add_category.php" method="POST">
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label for="categoryName" class="block text-gray-700 font-bold mb-2">Nom de la catégorie:</label>
+                        <input type="text" id="categoryName" name="categoryName" required 
+                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="closeCategoryModal()" 
+                                class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                            Annuler
+                        </button>
+                        <button type="submit" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                            Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Tag Modal -->
+<div id="addTagModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
+    <div class="relative mx-auto p-4 w-full max-w-md top-20">
+        <div class="bg-white rounded-lg shadow-xl">
+            <div class="flex justify-between items-start p-4 border-b">
+                <h3 class="text-xl font-semibold">Ajouter des Tags</h3>
+                <button onclick="closeTagModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form action="../actions/add_tags.php" method="POST">
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label for="tagString" class="block text-gray-700 font-bold mb-2">Tags (séparés par des virgules):</label>
+                        <textarea id="tagString" name="tagString" required 
+                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            rows="3" placeholder="Ex: PHP, JavaScript, Web Development"></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="closeTagModal()" 
+                                class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                            Annuler
+                        </button>
+                        <button type="submit" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                            Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
             </main>
         </div>
     </div>
@@ -361,6 +428,45 @@ $topTeachers = $userObj->getTopTeachers(3);
                 }
             }
         });
+        // Category Modal Handling
+const addCategoryButton = document.getElementById('addCategoryButton');
+const addCategoryModal = document.getElementById('addCategoryModal');
+
+// Tag Modal Handling
+const addTagButton = document.getElementById('addTagButton');
+const addTagModal = document.getElementById('addTagModal');
+
+// Category Modal
+if(addCategoryButton) {
+    addCategoryButton.addEventListener('click', () => {
+        addCategoryModal.classList.remove('hidden');
+    });
+}
+
+function closeCategoryModal() {
+    addCategoryModal.classList.add('hidden');
+}
+
+// Tag Modal
+if(addTagButton) {
+    addTagButton.addEventListener('click', () => {
+        addTagModal.classList.remove('hidden');
+    });
+}
+
+function closeTagModal() {
+    addTagModal.classList.add('hidden');
+}
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    if(event.target === addCategoryModal) {
+        closeCategoryModal();
+    }
+    if(event.target === addTagModal) {
+        closeTagModal();
+    }
+}
     </script>
 </body>
 </html>
