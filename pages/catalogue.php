@@ -2,16 +2,25 @@
 require_once '../classes/course.php';
 require_once '../classes/category.php';
 require_once '../classes/database.php';
-require_once '../classes/user.php'
+require_once '../classes/user.php';
 require_once '../classes/teacher.php';
 
+if (isset($_SESSION['user']) && $_SESSION['user']['role_id'] == 2) {
+    header('Location: ./enseignant_dashboard.php');
+    exit();
+}
+
+if (isset($_SESSION['user']) && $_SESSION['user']['role_id'] == 1) {
+    header('Location: ./admin_dashboard.php');
+    exit();
+}
 
 $perPage = 6;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $currentPage = max(1, $currentPage);
 
 $courseObj = new course();
-$allCourses = $courseObj->getAllCourses();
+$allCourses = $searchTerm ? $courseObj->searchCourses($searchTerm) : $courseObj->getAllCourses();
 
 $categoryObj = new category();
 $teacherObj = new teacher();
@@ -21,6 +30,13 @@ $totalPages = ceil($totalCourses / $perPage);
 
 $startIndex = ($currentPage - 1) * $perPage;
 $courses = array_slice($allCourses, $startIndex, $perPage);
+
+if (isset($_POST['inscribe']) && isset($_POST['course_id'])) {
+    if (!isset($_SESSION['user'])) {
+        header('Location: ./login.php');
+        exit();
+    }
+}
 
 ?>
 
@@ -68,8 +84,9 @@ $courses = array_slice($allCourses, $startIndex, $perPage);
         </div>
 
         
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <?php foreach ($courses as $course): ?>
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
     <div class="p-6">
         <!-- Category Badge -->
         <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-2">
@@ -108,7 +125,7 @@ $courses = array_slice($allCourses, $startIndex, $perPage);
     </div>
 </div>
     <?php endforeach; ?>
-
+</div>
 
         <!-- Pagination -->
         <?php if ($totalPages > 1): ?>
@@ -127,6 +144,7 @@ $courses = array_slice($allCourses, $startIndex, $perPage);
     <div id="courseModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
     <div class="relative mx-auto p-4 w-full max-w-2xl top-20">
         <div class="bg-white rounded-lg shadow-xl">
+            <!-- Modal Header -->
             <div class="flex justify-between items-start p-4 border-b">
                 <h3 class="text-xl font-semibold" id="modalTitle"></h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
@@ -134,20 +152,22 @@ $courses = array_slice($allCourses, $startIndex, $perPage);
                 </button>
             </div>
             
+            <!-- Modal Body -->
             <div class="p-6 space-y-4">
                 <p class="text-gray-600" id="modalDescription"></p>
                 
-                <div class="flex flex-wrap gap-2" id="modalCategories">
-                    <!-- Dynamic categories will be inserted here -->
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm" id="modalCategory"></span>
+                    <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-sm" id="modalContentType"></span>
                 </div>
 
                 <div class="space-y-2">
-                    <p><strong>Type de contenu:</strong> <span id="modalContentType"></span></p>
                     <p><strong>Instructeur:</strong> <span id="modalInstructor"></span></p>
-                    <p><strong>Durée:</strong> <span id="modalDuration"></span></p>
+                    <!-- Add more fields if needed -->
                 </div>
             </div>
 
+            <!-- Modal Footer -->
             <div class="flex justify-end p-4 border-t gap-3">
                 <button onclick="handleInscription()" 
                         class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">

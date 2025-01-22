@@ -161,4 +161,80 @@ class course {
         }
     }
 
+
+public function searchCourses($searchTerm) {
+    try {
+        $searchTerm = "%$searchTerm%";
+        $sql = "SELECT 
+            course_id, 
+            title, 
+            description, 
+            content_type, 
+            content_url, 
+            content_text, 
+            teacher_id, 
+            category_id
+        FROM courses 
+        WHERE title LIKE :searchTerm 
+        OR description LIKE :searchTerm";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        $coursesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $courses = [];
+        
+        foreach ($coursesData as $data) {
+            $courses[] = new course(
+                $data['course_id'],
+                $data['title'],
+                $data['description'],
+                $data['content_type'],
+                $data['content_url'],
+                $data['content_text'],
+                $data['teacher_id'],
+                $data['category_id']
+            );
+        }
+        return $courses;
+    } catch (PDOException $e) {
+        error_log("Error searching courses: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Dans course.php
+public function addCourse($title, $description, $contentType, $contentUrl, $contentText, $teacherId, $categoryId) {
+    try {
+        $sql = "INSERT INTO courses (title, description, content_type, content_url, content_text, teacher_id, category_id) 
+                VALUES (:title, :description, :contentType, :contentUrl, :contentText, :teacherId, :categoryId)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'title' => $title,
+            'description' => $description,
+            'contentType' => $contentType,
+            'contentUrl' => $contentUrl,
+            'contentText' => $contentText,
+            'teacherId' => $teacherId,
+            'categoryId' => $categoryId
+        ]);
+        return $this->db->lastInsertId();
+    } catch (PDOException $e) {
+        error_log("Error adding course: " . $e->getMessage());
+        return false;
+    }
+}
+
+public function deleteCourse($courseId) {
+    try {
+        $sql = "DELETE FROM courses WHERE course_id = :courseId";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['courseId' => $courseId]);
+    } catch (PDOException $e) {
+        error_log("Error deleting course: " . $e->getMessage());
+        return false;
+    }
+}
+
 }
